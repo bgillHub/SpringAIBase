@@ -2,7 +2,9 @@ package com.bgillhub.SpringAIBase.controller;
 
 import com.bgillhub.SpringAIBase.service.AiCodeService;
 import com.bgillhub.SpringAIBase.service.AiDatingService;
+import com.bgillhub.SpringAIBase.service.RagService;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +18,12 @@ class BaseAiController {
 
     private final AiDatingService aiDatingService;
     private final AiCodeService aiService;
+    private final RagService ragService;
 
-    BaseAiController(AiDatingService aiDatingService, AiCodeService aiService) {
+    BaseAiController(AiDatingService aiDatingService, AiCodeService aiService, RagService ragService) {
         this.aiService = aiService;
         this.aiDatingService = aiDatingService;
+        this.ragService = ragService;
     }
 
     @PostMapping("/ask")
@@ -28,7 +32,7 @@ class BaseAiController {
     }
 
     @PostMapping("/flirt")
-    String flirt(@RequestBody String chat) {
+    Flux<String> flirt(@RequestBody String chat) {
 
         //TODO: Create a context-built decision on which way to go
         boolean chance = ThreadLocalRandom.current().nextBoolean();
@@ -38,6 +42,11 @@ class BaseAiController {
             System.out.println("Negging");
             return aiDatingService.neg(chat);
         }
+    }
+
+    @PostMapping("/interest")
+    Flux<String> interests(@RequestBody String question) {
+        return aiDatingService.getInterests(question);
     }
 
     //Auto Generate a profile, because bots can be trusted for dating
