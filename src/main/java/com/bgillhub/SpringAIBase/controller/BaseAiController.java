@@ -1,19 +1,25 @@
 package com.bgillhub.SpringAIBase.controller;
 
-import com.bgillhub.SpringAIBase.service.BaseAiService;
+import com.bgillhub.SpringAIBase.service.AiCodeService;
+import com.bgillhub.SpringAIBase.service.AiDatingService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
+//Base Controller for the API
+//TODO: Be sure to expand this to service level api calls
 @RestController
 @RequestMapping("/api/ai")
 class BaseAiController {
 
-    private final BaseAiService aiService;
+    private final AiDatingService aiDatingService;
+    private final AiCodeService aiService;
 
-    BaseAiController(BaseAiService aiService) {
+    BaseAiController(AiDatingService aiDatingService, AiCodeService aiService) {
         this.aiService = aiService;
+        this.aiDatingService = aiDatingService;
     }
 
     @PostMapping("/ask")
@@ -21,17 +27,30 @@ class BaseAiController {
         return aiService.getResponse(question);
     }
 
+    @PostMapping("/flirt")
+    String flirt(@RequestBody String chat) {
+
+        //TODO: Create a context-built decision on which way to go
+        boolean chance = ThreadLocalRandom.current().nextBoolean();
+        if (chance)
+            return aiDatingService.flirt(chat);
+        else {
+            System.out.println("Negging");
+            return aiDatingService.neg(chat);
+        }
+    }
+
     //Auto Generate a profile, because bots can be trusted for dating
     @GetMapping("/profile")
-    BaseAiService.ItemDescription getItem(@RequestParam List<String> hobbies, @RequestParam(required = false) List<String> movies, @RequestParam(required = false) List<String> cities) {
-        return aiService.retrievePositive(hobbies, movies);
+    AiDatingService.ItemDescription getItem(@RequestParam List<String> hobbies, @RequestParam(required = false) List<String> movies, @RequestParam(required = false) List<String> cities) {
+        return aiDatingService.retrievePositive(hobbies, movies);
     }
 
     @GetMapping("/profileChaos")
-    List<BaseAiService.ItemDescription> getMultipleItem(@RequestParam List<String> hobbies, @RequestParam(required = false) List<String> movies, @RequestParam(required = false) List<String> cities) {
-        List<BaseAiService.ItemDescription> result = new ArrayList<>();
-        result.add(aiService.retrievePositive(hobbies, movies));
-        result.add(aiService.retrieveNegative(hobbies, movies));
+    List<AiDatingService.ItemDescription> getMultipleItem(@RequestParam List<String> hobbies, @RequestParam(required = false) List<String> movies, @RequestParam(required = false) List<String> cities) {
+        List<AiDatingService.ItemDescription> result = new ArrayList<>();
+        result.add(aiDatingService.retrievePositive(hobbies, movies));
+        result.add(aiDatingService.retrieveNegative(hobbies, movies));
         return result;
     }
 }
