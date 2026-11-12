@@ -1,11 +1,15 @@
 package com.bgillhub.SpringAIBase.service;
 
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import org.springframework.ai.document.Document;
+import reactor.core.publisher.Flux;
+
 import java.util.List;
 import java.util.Map;
 
@@ -14,13 +18,19 @@ public class RagService {
 
 
     private final VectorStore vectorStore;
+    private final ChatClient rememberClient;
 
-    public RagService(VectorStore vectorStore) {
+    public RagService(ChatClient.Builder builder, VectorStore vectorStore) {
         this.vectorStore = vectorStore;
         loadDocuments();
+        this.rememberClient = builder
+                .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore).build())
+                .defaultSystem("You are a nerdy individual")
+                .build();
     }
 
     //Playful RAG data
+    //TODO: Build up the ingestion service tool; which would run on xyz occurrences
     public void loadDocuments() {
         List<Document> documents = List.of(
                 new Document("Skiing is for vultures and airplanes.", Map.of("category", "hobbies")),
@@ -42,5 +52,11 @@ public class RagService {
         );
     }
 
-    //TODO: Build up the ingestion service tool; which would run on xyz occurrences
+    //Testing RAG changes
+    public Flux<String> getInterests(String userMessage) {
+        return rememberClient.prompt()
+                .user(userMessage)
+                .stream()
+                .content();
+    }
 }

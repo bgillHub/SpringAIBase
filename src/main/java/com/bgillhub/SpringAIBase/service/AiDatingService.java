@@ -22,11 +22,9 @@ public class AiDatingService {
     private final ChatClient flirtClient;
     private final ChatClient negClient;
 
-    private final ChatClient rememberClient;
-
     public record ItemDescription(String headline, String body, List<String> bullets) {}
 
-    public AiDatingService(ChatClient.Builder builder, VectorStore vectorStore) {
+    public AiDatingService(ChatClient.Builder builder) {
         this.interestsClient = builder
                 .defaultSystem("You are a concise, helpful assistant for our support team.")
                 .build();
@@ -36,11 +34,24 @@ public class AiDatingService {
         this.negClient = builder
                 .defaultSystem("You are a cynical individual that responds to statements.")
                 .build();
+    }
 
-        //Playing around with RAG; need to add vector store data
-        this.rememberClient = builder
-                .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore).build())
-                .build();
+
+
+    public Flux<String> flirt(String userMessage) {
+        System.out.println("Flirting");
+        return flirtClient.prompt()
+                .user(userMessage)
+                .stream()
+                .content();
+    }
+
+    //Chaotic side of chat
+    public Flux<String> neg(String userMessage) {
+        return negClient.prompt()
+                .user(userMessage.concat(". Respond very negatively"))
+                .stream()
+                .content();
     }
 
     public ItemDescription retrievePositive (List<String> hobbies, List<String> movies) {
@@ -49,14 +60,6 @@ public class AiDatingService {
                         .param("hobbies", hobbies).param("movies", movies))
                 .call()
                 .entity(ItemDescription.class);
-    }
-
-    public Flux<String> flirt(String userMessage) {
-        System.out.println("Flirting");
-        return flirtClient.prompt()
-                .user(userMessage)
-                .stream()
-                .content();
     }
 
     //Create the dark and weird side of the request. As the prompt is new, the new method is needed
@@ -68,22 +71,6 @@ public class AiDatingService {
                         .param("hobbies", hobbies).param("movies", movies))
                 .call()
                 .entity(ItemDescription.class);
-    }
-
-    //Chaotic side of chat
-    public Flux<String> neg(String userMessage) {
-        return negClient.prompt()
-                .user(userMessage.concat(". Respond very negatively"))
-                .stream()
-                .content();
-    }
-
-    //Testing RAG changes
-    public Flux<String> getInterests(String userMessage) {
-        return rememberClient.prompt()
-                .user(userMessage)
-                .stream()
-                .content();
     }
 
 }

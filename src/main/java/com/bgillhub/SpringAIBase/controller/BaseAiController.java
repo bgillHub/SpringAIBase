@@ -46,7 +46,7 @@ class BaseAiController {
 
     @PostMapping("/interest")
     Flux<String> interests(@RequestBody String question) {
-        return aiDatingService.getInterests(question);
+        return ragService.getInterests(question);
     }
 
     //Auto Generate a profile, because bots can be trusted for dating
