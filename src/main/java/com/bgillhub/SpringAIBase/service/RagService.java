@@ -5,7 +5,6 @@ import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvi
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import org.springframework.ai.document.Document;
 import reactor.core.publisher.Flux;
