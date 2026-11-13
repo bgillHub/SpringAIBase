@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 //Base Controller for the API
-//TODO: Be sure to expand this to service level api calls
+//TODO: Be sure to split this to service level api calls
 @RestController
 @RequestMapping("/api/ai")
 class BaseAiController {

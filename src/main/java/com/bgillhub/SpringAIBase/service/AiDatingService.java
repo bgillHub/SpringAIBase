@@ -3,7 +3,8 @@ package com.bgillhub.SpringAIBase.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -19,9 +20,10 @@ public class AiDatingService {
 
     public record ItemDescription(String headline, String body, List<String> bullets) {}
 
-    public AiDatingService(ChatClient.Builder builder, DataLoaderService dataLoaderService) {
+    public AiDatingService(ChatClient.Builder builder, DataLoaderService dataLoaderService, VectorStore vectorStore) {
         this.standardClient = builder
                 .defaultSystem("You are a concise individual. Never reply in more than 2 sentences")
+                .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore).build())
                 .build();
         dataLoaderService.load();
     }

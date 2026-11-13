@@ -9,12 +9,13 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.stereotype.Component;
 
 import org.springframework.ai.document.Document;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Service
 public class RagService {
 
     private static final Logger logger = LoggerFactory.getLogger(RagService.class);
@@ -24,7 +25,7 @@ public class RagService {
 
     public RagService(ChatClient.Builder builder, VectorStore vectorStore) {
         this.localVectorStore = vectorStore;
-        loadDocuments();
+      //  loadDocuments();
         this.rememberClient = builder
                 .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore).build())
                 .defaultSystem("You are a nerdy individual")

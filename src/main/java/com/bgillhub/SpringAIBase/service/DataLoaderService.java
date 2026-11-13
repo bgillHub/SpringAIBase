@@ -9,6 +9,7 @@ import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class DataLoaderService {
     //TODO: Find suitable rag data source..maybe a LOTR Skiing fanfic
     //Have this import on condition from an S3 location
 
-    @Value("classpath:/data/Sample_Data.pdf")
+    @Value("classpath:/data/Sample_Data-1.pdf")
     private Resource pdfResource;
 
     @Autowired
