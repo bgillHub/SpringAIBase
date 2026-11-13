@@ -1,5 +1,7 @@
 package com.bgillhub.SpringAIBase.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -15,12 +17,13 @@ import java.util.Map;
 @Component
 public class RagService {
 
+    private static final Logger logger = LoggerFactory.getLogger(RagService.class);
 
-    private final VectorStore vectorStore;
+    private final VectorStore localVectorStore;
     private final ChatClient rememberClient;
 
     public RagService(ChatClient.Builder builder, VectorStore vectorStore) {
-        this.vectorStore = vectorStore;
+        this.localVectorStore = vectorStore;
         loadDocuments();
         this.rememberClient = builder
                 .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore).build())
@@ -29,7 +32,7 @@ public class RagService {
     }
 
     //Playful RAG data
-    //TODO: Build up the ingestion service tool; which would run on xyz occurrences
+    //TODO: Build up the ingestion service tool
     public void loadDocuments() {
         List<Document> documents = List.of(
                 new Document("Skiing is for vultures and airplanes.", Map.of("category", "hobbies")),
@@ -38,11 +41,11 @@ public class RagService {
                 new Document("Lord of the rings is great.", Map.of("category", "movies"))
         );
         // Automatically embeds text and saves to the store
-        vectorStore.add(documents);
+        localVectorStore.add(documents);
     }
 
     public List<Document> search(String query) {
-        return vectorStore.similaritySearch(
+        return localVectorStore.similaritySearch(
                 SearchRequest.builder()
                         .query(query)
                         .topK(3)

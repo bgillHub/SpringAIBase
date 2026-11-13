@@ -1,5 +1,7 @@
 package com.bgillhub.SpringAIBase.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import java.util.List;
 public class AiCodeService {
 
     private final ChatClient chatClient;
+    private static final Logger logger = LoggerFactory.getLogger(AiCodeService.class);
 
     public AiCodeService(ChatClient.Builder builder) {
         this.chatClient = builder

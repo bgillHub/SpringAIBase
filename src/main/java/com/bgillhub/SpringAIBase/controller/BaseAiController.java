@@ -2,7 +2,10 @@ package com.bgillhub.SpringAIBase.controller;
 
 import com.bgillhub.SpringAIBase.service.AiCodeService;
 import com.bgillhub.SpringAIBase.service.AiDatingService;
+import com.bgillhub.SpringAIBase.service.DataLoaderService;
 import com.bgillhub.SpringAIBase.service.RagService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -15,6 +18,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @RestController
 @RequestMapping("/api/ai")
 class BaseAiController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BaseAiController.class);
 
     private final AiDatingService aiDatingService;
     private final AiCodeService aiService;

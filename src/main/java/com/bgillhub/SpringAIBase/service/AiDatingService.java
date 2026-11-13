@@ -1,6 +1,9 @@
 package com.bgillhub.SpringAIBase.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -12,13 +15,15 @@ import java.util.List;
 public class AiDatingService {
 
     private final ChatClient standardClient;
+    private static final Logger logger = LoggerFactory.getLogger(AiDatingService.class);
 
     public record ItemDescription(String headline, String body, List<String> bullets) {}
 
-    public AiDatingService(ChatClient.Builder builder) {
+    public AiDatingService(ChatClient.Builder builder, DataLoaderService dataLoaderService) {
         this.standardClient = builder
-                .defaultSystem("You are a concise individual. Never exceed 2 sentences")
+                .defaultSystem("You are a concise individual. Never reply in more than 2 sentences")
                 .build();
+        dataLoaderService.load();
     }
 
     public Flux<String> flirt(String userMessage) {
