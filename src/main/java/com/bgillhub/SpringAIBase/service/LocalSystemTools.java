@@ -19,25 +19,16 @@ public class LocalSystemTools {
     @Autowired
     VectorStore vectorStore;
 
-    @Tool(description = "Read the contents of a local text file given its relative or absolute path.")
-    public String readFile(
-            @ToolParam(description = "The file path to read") String filePath) {
-        try {
-            return Files.readString(Path.of(filePath));
-        } catch (Exception e) {
-            return "Error reading file: " + e.getMessage();
-        }
-    }
-
     @Tool(description = "Searches the internal knowledge base for relevant statements to help generate relevant content.")
     public String creativeWriting(
             @ToolParam(description = "The requested topic describing the information needed") String query) {
 
+        // Need to specify that these search results influence the writing tool's recommendations
         List<Document> results = vectorStore.similaritySearch(
                 SearchRequest.builder()
                         .query(query)
-                        .topK(4)
-                        .similarityThreshold(0.75)
+                        .topK(5)
+                        .similarityThreshold(0.25)
                         .build()
         );
 
@@ -49,8 +40,6 @@ public class LocalSystemTools {
                 .map(Document::getText)
                 .collect(Collectors.joining("\n---\n"));
     }
-
-
 
     @Tool(description = "Write text content to a local file, creating it if it does not exist.")
     public String writeFile(
